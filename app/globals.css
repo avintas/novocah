@@ -8,22 +8,29 @@
  */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #16202e;
 
   /* Primary brand */
-  --brand: #1f6feb;
+  --brand: #2563a8;
+  --brand-hover: #1c4e85;
   --brand-foreground: #ffffff;
-  --brand-muted: #eaf2ff;
+  --brand-muted: #e9f0f8;
 
-  /* Secondary / warm accent (CTAs, highlights) */
-  --accent: #0f9d8c;
+  /* Caring green accent (CTAs, highlights) */
+  --accent: #2e9e6b;
+  --accent-hover: #268258;
   --accent-foreground: #ffffff;
+
+  /* Deep navy for high-contrast CTA sections */
+  --navy: #13294b;
+  --navy-foreground: #ffffff;
+  --navy-muted: #b9c6da;
 
   /* Neutrals for surfaces, text, and borders */
   --surface: #ffffff;
-  --surface-muted: #f6f8fa;
-  --muted-foreground: #5b6573;
-  --border: #e3e8ef;
+  --surface-muted: #f6f7f4;
+  --muted-foreground: #5e6570;
+  --border: #e3e2dc;
 }
 
 @theme inline {
@@ -31,11 +38,17 @@
   --color-foreground: var(--foreground);
 
   --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-muted: var(--brand-muted);
 
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
+
+  --color-navy: var(--navy);
+  --color-navy-foreground: var(--navy-foreground);
+  --color-navy-muted: var(--navy-muted);
 
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
