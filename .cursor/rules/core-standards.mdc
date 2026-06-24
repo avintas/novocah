@@ -1,0 +1,13 @@
+---
+description: Core stack and file conventions
+alwaysApply: true
+---
+- Use Next.js App Router, TypeScript, Tailwind CSS v4
+- Use `cn()` from `lib/utils.ts` for all class names
+- Use the shared `Icon` wrapper from `components/ui/icon.tsx`, never raw Lucide icons
+- Use `getSupabaseBrowserClient()` from `lib/supabase/client.ts`
+- Shared utilities go in `lib/`
+- Reusable UI components go in `components/ui/`
+- Documentation goes in `docs/`
+- Never hardcode API keys or credentials — always use environment variables
+- Never commit `.env.local`

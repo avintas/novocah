@@ -1,0 +1,10 @@
+---
+description: TypeScript and lint quality rules
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+- `tsc --noEmit` must pass before any commit
+- `eslint .` must pass before any commit
+- No unused imports, no `any` types
+- Use conventional commits: feat: fix: chore: docs: refactor:
+- Never push directly to main

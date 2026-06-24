@@ -1,0 +1,8 @@
+---
+description: Development workflow and scoping rules
+alwaysApply: true
+---
+- Always propose what you plan to build before writing code, then wait for approval
+- Never assume scope — only implement what is explicitly requested
+- One feature branch per task: feat/<task-name>
+- After any significant milestone, remind to create a checkpoint tag and baseline branch
