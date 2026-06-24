@@ -1,54 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { CheckCircle2, Loader2, Send, X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
-import { jobOpenings } from "@/lib/careers";
+import { cn } from "@/lib/utils";
+import { feedbackRelationships, feedbackServices } from "@/lib/feedback";
 
 type Status = "idle" | "submitting" | "success" | "error";
+
+const emptyValues = {
+  name: "",
+  email: "",
+  phone: "",
+  relationship: "",
+  service: "",
+  message: "",
+  company: "",
+};
 
 const fieldClasses =
   "w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30";
 
-function initialFormValues(searchParams: URLSearchParams) {
-  const positionSlug = searchParams.get("position");
-  const intent = searchParams.get("intent");
+type FeedbackFormProps = {
+  onSuccess?: () => void;
+};
 
-  const job = positionSlug
-    ? jobOpenings.find((opening) => opening.slug === positionSlug)
-    : undefined;
-
-  let message = "";
-  if (job) {
-    message = `I am interested in applying for the ${job.title} position.\n\n`;
-  } else if (intent === "note" || intent === "review") {
-    message =
-      "I'd like to share feedback about my experience with California Healthcare Management Group.\n\n";
-  }
-
-  return {
-    name: "",
-    email: "",
-    phone: "",
-    message,
-    company: "",
-  };
-}
-
-export function ContactForm() {
-  const searchParams = useSearchParams();
-  const [values, setValues] = useState(() => initialFormValues(searchParams));
+export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
+  const [values, setValues] = useState(emptyValues);
   const [status, setStatus] = useState<Status>("idle");
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  function update<K extends keyof ReturnType<typeof initialFormValues>>(
-    key: K,
-    value: string,
-  ) {
+  function update<K extends keyof typeof emptyValues>(key: K, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -59,7 +43,7 @@ export function ContactForm() {
     setFieldErrors({});
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -67,7 +51,8 @@ export function ContactForm() {
 
       if (res.ok) {
         setStatus("success");
-        setValues(initialFormValues(searchParams));
+        setValues(emptyValues);
+        onSuccess?.();
         return;
       }
 
@@ -88,46 +73,32 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="border-border bg-surface flex h-full flex-col items-center justify-center rounded-2xl border p-8 text-center">
+      <div className="flex flex-col items-center px-6 py-10 text-center">
         <span className="bg-accent/10 text-accent flex h-14 w-14 items-center justify-center rounded-full">
           <Icon icon={CheckCircle2} size={30} />
         </span>
         <h3 className="text-foreground mt-4 text-xl font-semibold">
-          Thank you — your message is on its way
+          Thank you for your note
         </h3>
-        <p className="text-muted-foreground mt-2 text-sm">
-          A member of our care team will get back to you shortly. For urgent
-          needs, please call us directly.
+        <p className="text-muted-foreground mt-2 text-sm leading-6">
+          We&apos;ve received your message. Our team will read it and may
+          publish selected stories on this page after review.
         </p>
-        <button
-          type="button"
-          onClick={() => setStatus("idle")}
-          className="text-brand hover:text-brand-hover mt-6 text-sm font-semibold"
-        >
-          Send another message
-        </button>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="border-border bg-surface rounded-2xl border p-6 sm:p-8"
-    >
-      <h2 className="text-foreground text-xl font-semibold">
-        Send Us a Message
-      </h2>
-      <p className="text-muted-foreground mt-1 text-sm">
-        Fill out the form below and we&apos;ll get back to you as soon as
-        possible.
+    <form onSubmit={handleSubmit} noValidate className="px-6 py-6">
+      <p className="text-muted-foreground text-sm leading-6">
+        Share your experience with us. Please avoid including medical details or
+        private health information.
       </p>
 
       {formError ? (
         <p
           role="alert"
-          className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
           {formError}
         </p>
@@ -136,13 +107,13 @@ export function ContactForm() {
       <div className="mt-5 space-y-4">
         <div>
           <label
-            htmlFor="name"
+            htmlFor="feedback-name"
             className="text-foreground mb-1.5 block text-sm font-medium"
           >
             Name <span className="text-red-600">*</span>
           </label>
           <input
-            id="name"
+            id="feedback-name"
             name="name"
             type="text"
             autoComplete="name"
@@ -159,13 +130,13 @@ export function ContactForm() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label
-              htmlFor="email"
+              htmlFor="feedback-email"
               className="text-foreground mb-1.5 block text-sm font-medium"
             >
               Email <span className="text-red-600">*</span>
             </label>
             <input
-              id="email"
+              id="feedback-email"
               name="email"
               type="email"
               autoComplete="email"
@@ -181,16 +152,15 @@ export function ContactForm() {
               <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
             ) : null}
           </div>
-
           <div>
             <label
-              htmlFor="phone"
+              htmlFor="feedback-phone"
               className="text-foreground mb-1.5 block text-sm font-medium"
             >
               Phone
             </label>
             <input
-              id="phone"
+              id="feedback-phone"
               name="phone"
               type="tel"
               autoComplete="tel"
@@ -202,15 +172,62 @@ export function ContactForm() {
           </div>
         </div>
 
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label
+              htmlFor="feedback-relationship"
+              className="text-foreground mb-1.5 block text-sm font-medium"
+            >
+              Your relationship
+            </label>
+            <select
+              id="feedback-relationship"
+              name="relationship"
+              value={values.relationship}
+              onChange={(e) => update("relationship", e.target.value)}
+              className={fieldClasses}
+            >
+              <option value="">Select one (optional)</option>
+              {feedbackRelationships.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="feedback-service"
+              className="text-foreground mb-1.5 block text-sm font-medium"
+            >
+              Service received
+            </label>
+            <select
+              id="feedback-service"
+              name="service"
+              value={values.service}
+              onChange={(e) => update("service", e.target.value)}
+              className={fieldClasses}
+            >
+              <option value="">Select one (optional)</option>
+              {feedbackServices.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div>
           <label
-            htmlFor="message"
+            htmlFor="feedback-message"
             className="text-foreground mb-1.5 block text-sm font-medium"
           >
-            Message <span className="text-red-600">*</span>
+            Your experience <span className="text-red-600">*</span>
           </label>
           <textarea
-            id="message"
+            id="feedback-message"
             name="message"
             rows={5}
             value={values.message}
@@ -220,18 +237,17 @@ export function ContactForm() {
               "resize-y",
               fieldErrors.message && "border-red-400",
             )}
-            placeholder="How can we help you or your loved one?"
+            placeholder="Tell us about your experience with our team…"
           />
           {fieldErrors.message ? (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.message}</p>
           ) : null}
         </div>
 
-        {/* Honeypot — hidden from real users */}
         <div aria-hidden className="hidden">
-          <label htmlFor="company">Company</label>
+          <label htmlFor="feedback-company">Company</label>
           <input
-            id="company"
+            id="feedback-company"
             name="company"
             type="text"
             tabIndex={-1}
@@ -255,10 +271,63 @@ export function ContactForm() {
         ) : (
           <>
             <Icon icon={Send} size={18} />
-            Send Message
+            Send Note
           </>
         )}
       </button>
     </form>
+  );
+}
+
+type FeedbackDialogProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+export function FeedbackDialog({ open, onClose }: FeedbackDialogProps) {
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
+      role="presentation"
+    >
+      <button
+        type="button"
+        className="bg-foreground/50 absolute inset-0"
+        aria-label="Close feedback form"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feedback-dialog-title"
+        className="border-border bg-surface relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border"
+      >
+        <div className="border-border flex items-start justify-between gap-4 border-b px-6 py-5">
+          <div>
+            <h2
+              id="feedback-dialog-title"
+              className="text-foreground text-xl font-semibold"
+            >
+              Drop Us a Note
+            </h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              We read every message. Selected stories may appear on this page
+              after review.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-muted-foreground hover:bg-surface-muted hover:text-foreground focus-visible:ring-brand flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="Close"
+          >
+            <Icon icon={X} size={20} />
+          </button>
+        </div>
+        <FeedbackForm />
+      </div>
+    </div>
   );
 }
