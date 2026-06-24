@@ -3,10 +3,11 @@ import Image from "next/image";
 import { Container, Section, SectionHeading } from "@/components/ui/section";
 import { specializedServices } from "@/lib/home";
 import { mediaUrl } from "@/lib/media";
+import { cn } from "@/lib/utils";
 
-export function SpecializedServices() {
+export function SpecializedServices({ className }: { className?: string }) {
   return (
-    <Section className="bg-surface">
+    <Section className={cn("bg-surface", className)}>
       <Container>
         <SectionHeading
           title="Additional Specialized Services"

@@ -28,7 +28,7 @@ export function CoreServices() {
           {services.map((service) => (
             <Link
               key={service.slug}
-              href="/services"
+              href={`/services#${service.slug}`}
               className="group border-border bg-surface hover:border-brand/50 flex flex-col overflow-hidden rounded-2xl border transition-colors"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden">

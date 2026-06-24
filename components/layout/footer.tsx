@@ -5,6 +5,7 @@ import { Mail, MapPin, Phone, Printer } from "lucide-react";
 import { mainNav, services, siteConfig } from "@/lib/site";
 import { brandAssets, mediaUrl } from "@/lib/media";
 import { Icon } from "@/components/ui/icon";
+import { Wordmark } from "@/components/layout/wordmark";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -14,16 +15,7 @@ export function Footer() {
       <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
-            <div className="bg-surface ring-border inline-flex rounded-lg p-3 ring-1">
-              <Image
-                src={mediaUrl(brandAssets.logo.id)}
-                alt={`${siteConfig.name} logo`}
-                width={brandAssets.logo.width}
-                height={brandAssets.logo.height}
-                className="h-28 w-auto"
-                priority
-              />
-            </div>
+            <Wordmark size="footer" />
             <p className="text-muted-foreground text-sm leading-6">
               {siteConfig.description}
             </p>
@@ -127,9 +119,22 @@ export function Footer() {
               </p>
             </div>
           </div>
-          <p className="text-muted-foreground text-xs">
-            &copy; {year} {siteConfig.name}. All rights reserved.
-          </p>
+          <div className="text-muted-foreground flex flex-col gap-1 text-xs">
+            <p>
+              &copy; {year} {siteConfig.name}. All rights reserved.
+            </p>
+            <p>
+              Built by{" "}
+              <a
+                href="https://intrivia.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-brand font-medium transition-colors"
+              >
+                Intrivia LLC
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

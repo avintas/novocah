@@ -1,42 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Phone, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { mainNav, siteConfig } from "@/lib/site";
-import { brandAssets, mediaUrl } from "@/lib/media";
 import { Icon } from "@/components/ui/icon";
-
-function Wordmark() {
-  return (
-    <Link
-      href="/"
-      className="flex items-center gap-3"
-      aria-label={`${siteConfig.name} home`}
-    >
-      <Image
-        src={mediaUrl(brandAssets.logo.id)}
-        alt={`${siteConfig.name} logo`}
-        width={brandAssets.logo.width}
-        height={brandAssets.logo.height}
-        className="h-14 w-auto"
-        priority
-      />
-      <span className="flex flex-col leading-tight">
-        <span className="text-brand text-base font-semibold tracking-tight sm:text-lg">
-          {siteConfig.wordmark.line1}
-        </span>
-        <span className="text-foreground text-base font-semibold tracking-tight sm:text-lg">
-          {siteConfig.wordmark.line2}
-        </span>
-      </span>
-    </Link>
-  );
-}
+import { Wordmark } from "@/components/layout/wordmark";
 
 export function Header() {
   const pathname = usePathname();
@@ -48,7 +20,7 @@ export function Header() {
   return (
     <header className="border-border bg-surface/95 supports-[backdrop-filter]:bg-surface/80 sticky top-0 z-50 border-b backdrop-blur">
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Wordmark />
+        <Wordmark size="header" />
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           {mainNav.map((item) => (
