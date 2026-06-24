@@ -5,7 +5,41 @@ import { Mail, MapPin, Phone, Printer } from "lucide-react";
 import { mainNav, services, siteConfig } from "@/lib/site";
 import { brandAssets, mediaUrl } from "@/lib/media";
 import { Icon } from "@/components/ui/icon";
-import { Wordmark } from "@/components/layout/wordmark";
+import { cn } from "@/lib/utils";
+
+function JointCommissionBadge({
+  imageClassName,
+  className,
+}: {
+  imageClassName?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "border-border bg-surface flex flex-col items-center gap-3 rounded-lg border px-4 py-4 text-center",
+        className,
+      )}
+    >
+      <Image
+        src={mediaUrl(brandAssets.jointCommissionSeal.id)}
+        alt={`${siteConfig.certification.label} ${siteConfig.certification.detail}`}
+        width={brandAssets.jointCommissionSeal.width}
+        height={brandAssets.jointCommissionSeal.height}
+        className={cn("size-[9rem] shrink-0", imageClassName)}
+      />
+      <div className="leading-tight">
+        <p className="text-foreground text-sm font-semibold">
+          {siteConfig.certification.label}
+        </p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          {siteConfig.certification.detail} &middot;{" "}
+          {siteConfig.certification.status}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -14,15 +48,8 @@ export function Footer() {
     <footer className="border-border bg-surface-muted border-t">
       <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-4">
-            <Wordmark size="footer" />
-            <p className="text-muted-foreground text-sm leading-6">
-              {siteConfig.description}
-            </p>
-            <p className="text-muted-foreground text-sm">
-              <span className="text-foreground font-medium">Serving:</span>{" "}
-              {siteConfig.serviceAreas.join(", ")} Counties
-            </p>
+          <div>
+            <JointCommissionBadge />
           </div>
 
           <nav aria-label="Footer quick links">
@@ -100,25 +127,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-border mt-12 flex flex-col items-start gap-6 border-t pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <div className="border-border bg-surface flex items-center gap-3 rounded-lg border px-4 py-3">
-            <Image
-              src={mediaUrl(brandAssets.jointCommissionSeal.id)}
-              alt={`${siteConfig.certification.label} ${siteConfig.certification.detail}`}
-              width={brandAssets.jointCommissionSeal.width}
-              height={brandAssets.jointCommissionSeal.height}
-              className="h-12 w-12 shrink-0"
-            />
-            <div className="leading-tight">
-              <p className="text-foreground text-sm font-semibold">
-                {siteConfig.certification.label}
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {siteConfig.certification.detail} &middot;{" "}
-                {siteConfig.certification.status}
-              </p>
-            </div>
-          </div>
+        <div className="border-border mt-12 flex flex-col items-start gap-6 border-t pt-8">
           <div className="text-muted-foreground flex flex-col gap-1 text-xs">
             <p>
               &copy; {year} {siteConfig.name}. All rights reserved.
