@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Clock, Mail, MapPin, Phone, Siren } from "lucide-react";
 
 import { Container, Section } from "@/components/ui/section";
@@ -147,7 +148,18 @@ export default function ContactPage() {
             </div>
 
             {/* Form */}
-            <ContactForm />
+            <Suspense
+              fallback={
+                <div
+                  className="border-border bg-surface text-muted-foreground rounded-2xl border p-8 text-sm"
+                  aria-busy="true"
+                >
+                  Loading form…
+                </div>
+              }
+            >
+              <ContactForm />
+            </Suspense>
           </div>
 
           {/* Map */}

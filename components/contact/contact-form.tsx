@@ -1,31 +1,48 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
+import { jobOpenings } from "@/lib/careers";
 
 type Status = "idle" | "submitting" | "success" | "error";
-
-const initialValues = {
-  name: "",
-  email: "",
-  phone: "",
-  message: "",
-  company: "", // honeypot
-};
 
 const fieldClasses =
   "w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30";
 
+function initialFormValues(positionSlug: string | null) {
+  const job = positionSlug
+    ? jobOpenings.find((opening) => opening.slug === positionSlug)
+    : undefined;
+  const message = job
+    ? `I am interested in applying for the ${job.title} position.\n\n`
+    : "";
+
+  return {
+    name: "",
+    email: "",
+    phone: "",
+    message,
+    company: "",
+  };
+}
+
 export function ContactForm() {
-  const [values, setValues] = useState(initialValues);
+  const searchParams = useSearchParams();
+  const [values, setValues] = useState(() =>
+    initialFormValues(searchParams.get("position")),
+  );
   const [status, setStatus] = useState<Status>("idle");
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  function update<K extends keyof typeof initialValues>(key: K, value: string) {
+  function update<K extends keyof ReturnType<typeof initialFormValues>>(
+    key: K,
+    value: string,
+  ) {
     setValues((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -44,7 +61,7 @@ export function ContactForm() {
 
       if (res.ok) {
         setStatus("success");
-        setValues(initialValues);
+        setValues(initialFormValues(searchParams.get("position")));
         return;
       }
 
