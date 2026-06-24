@@ -5,6 +5,9 @@ type ContactPayload = {
   email?: string;
   phone?: string;
   message?: string;
+  preferredAvailability?: string;
+  /** `consultation` = free assessment request from modal; default = general inquiry. */
+  intent?: string;
   /** Honeypot field — should always be empty for real users. */
   company?: string;
 };
@@ -28,12 +31,19 @@ export async function POST(request: Request) {
   const email = data.email?.trim() ?? "";
   const phone = data.phone?.trim() ?? "";
   const message = data.message?.trim() ?? "";
+  const preferredAvailability = data.preferredAvailability?.trim() ?? "";
+  const isConsultation = data.intent === "consultation";
 
   const fields: Record<string, string> = {};
   if (!name) fields.name = "Please enter your name.";
   if (!email) fields.email = "Please enter your email.";
   else if (!EMAIL_RE.test(email)) fields.email = "Please enter a valid email.";
-  if (!message) fields.message = "Please enter a message.";
+  if (isConsultation && !phone) {
+    fields.phone = "Please enter a phone number so we can reach you.";
+  }
+  if (!isConsultation && !message) {
+    fields.message = "Please enter a message.";
+  }
 
   if (Object.keys(fields).length > 0) {
     return Response.json(
@@ -62,19 +72,32 @@ export async function POST(request: Request) {
   const resend = new Resend(apiKey);
 
   try {
+    const subject = isConsultation
+      ? `Consultation request from ${name}`
+      : `New website inquiry from ${name}`;
+
+    const bodyLines = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Phone: ${phone || "—"}`,
+    ];
+    if (isConsultation) {
+      bodyLines.push(`Best times to reach: ${preferredAvailability || "—"}`);
+    }
+    if (message) {
+      bodyLines.push(
+        "",
+        isConsultation ? "Care needs / questions:" : "Message:",
+        message,
+      );
+    }
+
     const { error } = await resend.emails.send({
       from,
       to,
       replyTo: email,
-      subject: `New website inquiry from ${name}`,
-      text: [
-        `Name: ${name}`,
-        `Email: ${email}`,
-        `Phone: ${phone || "—"}`,
-        "",
-        "Message:",
-        message,
-      ].join("\n"),
+      subject,
+      text: bodyLines.join("\n"),
     });
 
     if (error) {
