@@ -38,8 +38,7 @@ export const siteConfig = {
   },
   hours: [
     { days: "Monday – Friday", time: "8:00 AM – 6:00 PM" },
-    { days: "Saturday", time: "9:00 AM – 3:00 PM" },
-    { days: "Sunday", time: "Emergency Services Only" },
+    { days: "Saturday & Sunday", time: "Closed" },
   ],
   emergency: {
     note: "For after-hours emergencies, please call our 24/7 hotline",
